@@ -1,0 +1,13 @@
+[package]
+name = "issue416"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+libremarkable = "0.6.0"
+
+[profile.dev]
+lto = "off"
+
+[profile.release]
+lto = "fat"

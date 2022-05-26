@@ -1,0 +1,120 @@
+diff --git a/Cargo.toml b/Cargo.toml
+index 9731978..fad875c 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -18,7 +18,7 @@ target= "armv7-unknown-linux-gnueabihf"
+ log = "0.4.1"
+ env_logger = "0.5.6"
+ ioctl-gen = "0.1.0"
+-libc = "0.2.37"
++libc = "=0.2.37"
+ mmap = "0.1.1"
+ rusttype = "0.4.1"
+ evdev = "0.10.1"
+diff --git a/src/framebuffer/core.rs b/src/framebuffer/core.rs
+index 0746795..d3b52fc 100644
+--- a/src/framebuffer/core.rs
++++ b/src/framebuffer/core.rs
+@@ -96,7 +96,7 @@ impl<'a> framebuffer::FramebufferBase<'a> for Framebuffer<'a> {
+                     MXCFB_ENABLE_EPDC_ACCESS
+                 } else {
+                     MXCFB_DISABLE_EPDC_ACCESS
+-                },
++                } as _,
+             );
+         };
+     }
+@@ -106,7 +106,7 @@ impl<'a> framebuffer::FramebufferBase<'a> for Framebuffer<'a> {
+         unsafe {
+             libc::ioctl(
+                 self.device.as_raw_fd(),
+-                MXCFB_SET_AUTO_UPDATE_MODE,
++                MXCFB_SET_AUTO_UPDATE_MODE as _,
+                 &m as *const u32,
+             );
+         };
+@@ -117,7 +117,7 @@ impl<'a> framebuffer::FramebufferBase<'a> for Framebuffer<'a> {
+         unsafe {
+             libc::ioctl(
+                 self.device.as_raw_fd(),
+-                MXCFB_SET_UPDATE_SCHEME,
++                MXCFB_SET_UPDATE_SCHEME as _,
+                 &s as *const u32,
+             );
+         };
+@@ -125,7 +125,7 @@ impl<'a> framebuffer::FramebufferBase<'a> for Framebuffer<'a> {
+ 
+     fn get_fix_screeninfo(device: &File) -> FixScreeninfo {
+         let mut info: FixScreeninfo = Default::default();
+-        let result = unsafe { ioctl(device.as_raw_fd(), FBIOGET_FSCREENINFO, &mut info) };
++        let result = unsafe { ioctl(device.as_raw_fd(), FBIOGET_FSCREENINFO as _, &mut info) };
+         if result != 0 {
+             panic!("FBIOGET_FSCREENINFO failed");
+         }
+@@ -134,7 +134,7 @@ impl<'a> framebuffer::FramebufferBase<'a> for Framebuffer<'a> {
+ 
+     fn get_var_screeninfo(device: &File) -> VarScreeninfo {
+         let mut info: VarScreeninfo = Default::default();
+-        let result = unsafe { ioctl(device.as_raw_fd(), FBIOGET_VSCREENINFO, &mut info) };
++        let result = unsafe { ioctl(device.as_raw_fd(), FBIOGET_VSCREENINFO as _, &mut info) };
+         if result != 0 {
+             panic!("FBIOGET_VSCREENINFO failed");
+         }
+@@ -142,7 +142,7 @@ impl<'a> framebuffer::FramebufferBase<'a> for Framebuffer<'a> {
+     }
+ 
+     fn put_var_screeninfo(device: &File, var_screen_info: &mut VarScreeninfo) -> bool {
+-        let result = unsafe { ioctl(device.as_raw_fd(), FBIOPUT_VSCREENINFO, var_screen_info) };
++        let result = unsafe { ioctl(device.as_raw_fd(), FBIOPUT_VSCREENINFO as _, var_screen_info) };
+         result == 0
+     }
+ }
+diff --git a/src/framebuffer/refresh.rs b/src/framebuffer/refresh.rs
+index ca2bd8b..d9c97f9 100644
+--- a/src/framebuffer/refresh.rs
++++ b/src/framebuffer/refresh.rs
+@@ -44,7 +44,7 @@ impl<'a> framebuffer::FramebufferRefresh for core::Framebuffer<'a> {
+ 
+         let pt: *const mxcfb_update_data = &whole;
+         unsafe {
+-            libc::ioctl(self.device.as_raw_fd(), common::MXCFB_SEND_UPDATE, pt);
++            libc::ioctl(self.device.as_raw_fd(), common::MXCFB_SEND_UPDATE as _, pt);
+         }
+ 
+         if wait_completion {
+@@ -55,7 +55,7 @@ impl<'a> framebuffer::FramebufferRefresh for core::Framebuffer<'a> {
+             unsafe {
+                 if libc::ioctl(
+                     self.device.as_raw_fd(),
+-                    common::MXCFB_WAIT_FOR_UPDATE_COMPLETE,
++                    common::MXCFB_WAIT_FOR_UPDATE_COMPLETE as _,
+                     &mut markerdata,
+                 ) < 0
+                 {
+@@ -128,7 +128,7 @@ impl<'a> framebuffer::FramebufferRefresh for core::Framebuffer<'a> {
+ 
+         let pt: *const mxcfb_update_data = &whole;
+         unsafe {
+-            libc::ioctl(self.device.as_raw_fd(), common::MXCFB_SEND_UPDATE, pt);
++            libc::ioctl(self.device.as_raw_fd(), common::MXCFB_SEND_UPDATE as _, pt);
+         }
+ 
+         match mode {
+@@ -140,7 +140,7 @@ impl<'a> framebuffer::FramebufferRefresh for core::Framebuffer<'a> {
+                 unsafe {
+                     if libc::ioctl(
+                         self.device.as_raw_fd(),
+-                        common::MXCFB_WAIT_FOR_UPDATE_COMPLETE,
++                        common::MXCFB_WAIT_FOR_UPDATE_COMPLETE as _,
+                         &mut markerdata,
+                     ) < 0
+                     {
+@@ -161,7 +161,7 @@ impl<'a> framebuffer::FramebufferRefresh for core::Framebuffer<'a> {
+         unsafe {
+             if libc::ioctl(
+                 self.device.as_raw_fd(),
+-                common::MXCFB_WAIT_FOR_UPDATE_COMPLETE,
++                common::MXCFB_WAIT_FOR_UPDATE_COMPLETE as _,
+                 &mut markerdata,
+             ) < 0
+             {

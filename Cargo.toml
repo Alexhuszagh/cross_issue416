@@ -4,7 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-libremarkable = "0.6.0"
+# 0.6.0 is the latest, 0.3.2 is the latest since the armv7 musl hf patch.
+libremarkable = { version = "0.3.2", path = "libremarkable" }
 
 [profile.dev]
 lto = "off"

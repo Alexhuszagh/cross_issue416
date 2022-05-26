@@ -1,10 +1,11 @@
 [package]
 name = "issue416"
 version = "0.1.0"
-edition = "2021"
+edition = "2018"
 
 [dependencies]
 # 0.6.0 is the latest, 0.3.2 is the latest since the armv7 musl hf patch.
+# Only use local paths on nightly 1.62.0, use the defaults on 1.44.0.
 libremarkable = { version = "0.3.2", path = "libremarkable" }
 
 [profile.dev]

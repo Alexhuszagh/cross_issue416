@@ -41,7 +41,7 @@ version = "0.1.0"
 
 [dependencies.atomic]
 version = "0.4"
-path = "../atomic"
+#path = "../atomic"
 features = ["nightly"]
 
 [dependencies.env_logger]
